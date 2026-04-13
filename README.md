@@ -19,8 +19,8 @@ A lightweight PowerShell utility that automatically detects and pushes git commi
    - `autopush.ps1` — Main application
    - `run-autopush.ps1` — Optional launcher script
    - `autopush-config.json` — Configuration file
-   - `gitpush_running.ico` — Running state icon
-   - `gitpush_paused.ico` — Paused state icon
+   - `autopush_running.ico` — Running state icon
+   - `autopush_paused.ico` — Paused state icon
 
 2. Edit `autopush-config.json` with your repository paths and preferences
 
@@ -44,9 +44,9 @@ Edit `autopush-config.json`:
   "checkInterval": 300,
   "showNotifications": true,
   "autoStart": true,
-  "logFile": "C:\\Users\\<username>\\.local\\bin\\autopush.log",
-  "iconRunning": "C:\\Users\\<username>\\.local\\bin\\gitpush_running.ico",
-  "iconPaused": "C:\\Users\\<username>\\.local\\bin\\gitpush_paused.ico",
+  "logFile": null,
+  "iconRunning": "autopush_running.ico",
+  "iconPaused": "autopush_paused.ico",
   "repositories": [
     {
       "path": "C:\\path\\to\\repo",
@@ -61,9 +61,9 @@ Edit `autopush-config.json`:
 - `checkInterval` — Seconds between checks (default: 300 = 5 minutes)
 - `showNotifications` — Enable toast notifications (true/false)
 - `autoStart` — Create startup shortcut on first run (true/false). Set to false to remove.
-- `logFile` — Path to log file; set to null to disable logging
-- `iconRunning` / `iconPaused` — Icon file paths
-- `repositories` — Array of repos with path, branch, and enabled status
+- `logFile` — Path to log file; set to null to disable logging. Relative paths resolve to script directory.
+- `iconRunning` / `iconPaused` — Icon file names or paths. Relative paths resolve to script directory.
+- `repositories` — Array of repos with path, branch, and enabled status. Paths should be absolute.
 
 ## Usage
 

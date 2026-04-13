@@ -134,7 +134,7 @@ function CreateTrayIcon {
     $pauseItem = New-Object System.Windows.Forms.MenuItem("&Pause")
     $pauseItem.Add_Click({
         $script:isPaused = -not $script:isPaused
-        $pauseItem.Text = if ($script:isPaused) { "&Resume" } else { "&Pause" }
+        $this.Text = if ($script:isPaused) { "&Resume" } else { "&Pause" }
         $tray.Text = if ($script:isPaused) { "AutoPush - Paused" } else { "AutoPush - Running" }
         
         if ($script:isPaused -and (Test-Path $tray.IconPaused)) {

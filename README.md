@@ -11,7 +11,7 @@ A lightweight PowerShell utility that automatically detects and pushes git commi
 - **Logging** — Tracks push events to a log file (only logs actual pushes, not checks)
 - **Multi-Repo** — Monitor multiple repositories from a single config
 - **Auto-Start** — Optional startup on Windows login (configurable)
-- **No Flash** — Runs cleanly in background (except brief PowerShell taskbar icon on right-click)
+- **Clean Tray** — Runs silently in system tray with no taskbar flashing
 
 ## Installation
 
@@ -75,7 +75,6 @@ run-autopush
 ### Right-Click Menu (System Tray)
 - **Pause** — Pause checking (toggles to Resume)
 - **Edit Config** — Opens config file in Notepad
-- **Close Menu** — Close the menu
 - **Exit** — Stop the app
 
 ### Logging
@@ -94,7 +93,6 @@ Push events are logged to the configured log file with timestamp and result:
 
 ## Limitations
 
-- Brief PowerShell taskbar icon appears when right-clicking the tray icon (cosmetic only, doesn't affect functionality)
 - Only works on Windows
 
 ## License

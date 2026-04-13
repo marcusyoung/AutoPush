@@ -118,74 +118,56 @@ function CreateTrayIcon {
     $tray | Add-Member -MemberType NoteProperty -Name IconRunning -Value $iconRunning
     $tray | Add-Member -MemberType NoteProperty -Name IconPaused -Value $iconPaused
     
-    $tray.Add_MouseClick({
-        if ($_.Button -eq [System.Windows.Forms.MouseButtons]::Right) {
-            # Rebuild menu fresh on each right-click so text reflects current state
-            $contextMenu = New-Object System.Windows.Forms.ContextMenuStrip
-            
-            $pauseItem = New-Object System.Windows.Forms.ToolStripMenuItem
-            $pauseItem.Text = if ($script:isPaused) { "Resume" } else { "Pause" }
-             $pauseItem.Add_Click({
-                 if ($null -eq $script:pauseItem) {
-                     Write-Host "Error: pauseItem reference lost"
-                     return
-                 }
-                 
-                 $script:isPaused = -not $script:isPaused
-                 $script:pauseItem.Text = if ($script:isPaused) { "Resume" } else { "Pause" }
-                 $tray.Text = if ($script:isPaused) { "AutoPush - Paused" } else { "AutoPush - Running" }
-                 
-                 if ($script:isPaused -and (Test-Path $tray.IconPaused)) {
-                     try {
-                         $tray.Icon = New-Object System.Drawing.Icon($tray.IconPaused)
-                     }
-                     catch {
-                         Write-Host "Failed to load paused icon: $($_.Exception.Message)"
-                     }
-                 }
-                 elseif (-not $script:isPaused -and (Test-Path $tray.IconRunning)) {
-                     try {
-                         $tray.Icon = New-Object System.Drawing.Icon($tray.IconRunning)
-                     }
-                     catch {
-                         Write-Host "Failed to load running icon: $($_.Exception.Message)"
-                     }
-                 }
-             })
-            $script:pauseItem = $pauseItem
-            $contextMenu.Items.Add($pauseItem) | Out-Null
-            
-            $configItem = New-Object System.Windows.Forms.ToolStripMenuItem
-            $configItem.Text = "Edit Config"
-            $configItem.Add_Click({
-                & notepad $script:configPath
-                $contextMenu.Close()
-            })
-            $contextMenu.Items.Add($configItem) | Out-Null
-            
-            $contextMenu.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
-            
-            $closeItem = New-Object System.Windows.Forms.ToolStripMenuItem
-            $closeItem.Text = "Close Menu"
-            $closeItem.Add_Click({
-                $contextMenu.Close()
-            })
-            $contextMenu.Items.Add($closeItem) | Out-Null
-            
-            $contextMenu.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator)) | Out-Null
-            
-            $exitItem = New-Object System.Windows.Forms.ToolStripMenuItem
-            $exitItem.Text = "Exit"
-             $exitItem.Add_Click({
-                 $tray.Visible = $false
-                 $contextMenu.Close()
-                 [System.Windows.Forms.Application]::Exit()
-             })
-            $contextMenu.Items.Add($exitItem) | Out-Null
-            
-            $contextMenu.Show([System.Windows.Forms.Cursor]::Position)
+    # Create context menu via the built-in ContextMenu property
+    $contextMenu = New-Object System.Windows.Forms.ContextMenu
+    
+    # Pause/Resume
+    $pauseItem = New-Object System.Windows.Forms.MenuItem("&Pause")
+    $pauseItem.Add_Click({
+        $script:isPaused = -not $script:isPaused
+        $pauseItem.Text = if ($script:isPaused) { "&Resume" } else { "&Pause" }
+        $tray.Text = if ($script:isPaused) { "AutoPush - Paused" } else { "AutoPush - Running" }
+        
+        if ($script:isPaused -and (Test-Path $tray.IconPaused)) {
+            try {
+                $tray.Icon = New-Object System.Drawing.Icon($tray.IconPaused)
+            }
+            catch {
+                Write-Host "Failed to load paused icon: $($_.Exception.Message)"
+            }
+        }
+        elseif (-not $script:isPaused -and (Test-Path $tray.IconRunning)) {
+            try {
+                $tray.Icon = New-Object System.Drawing.Icon($tray.IconRunning)
+            }
+            catch {
+                Write-Host "Failed to load running icon: $($_.Exception.Message)"
+            }
         }
     })
+    $script:pauseItem = $pauseItem
+    $contextMenu.MenuItems.Add($pauseItem) | Out-Null
+    
+    # Edit Config
+    $configItem = New-Object System.Windows.Forms.MenuItem("&Edit Config")
+    $configItem.Add_Click({
+        & notepad $script:configPath
+    })
+    $contextMenu.MenuItems.Add($configItem) | Out-Null
+    
+    # Separator
+    $contextMenu.MenuItems.Add("-") | Out-Null
+    
+    # Exit
+    $exitItem = New-Object System.Windows.Forms.MenuItem("E&xit")
+    $exitItem.Add_Click({
+        $tray.Visible = $false
+        [System.Windows.Forms.Application]::Exit()
+    })
+    $contextMenu.MenuItems.Add($exitItem) | Out-Null
+    
+    # Assign the menu to the tray icon
+    $tray.ContextMenu = $contextMenu
     
     return $tray
 }
@@ -212,8 +194,8 @@ if ($config.autoStart) {
         try {
             $shell = New-Object -ComObject WScript.Shell
             $link = $shell.CreateShortcut($shortcutPath)
-            $link.TargetPath = Join-Path $PSScriptRoot "autopush.ps1"
-            $link.Arguments = "-NoProfile -ExecutionPolicy Bypass"
+            $link.TargetPath = "powershell.exe"
+            $link.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File ""$(Join-Path $PSScriptRoot 'autopush.ps1')"""
             $link.WorkingDirectory = $PSScriptRoot
             $link.WindowStyle = 7  # Hidden
             $link.IconLocation = $config.iconRunning  # Use running icon
@@ -239,6 +221,7 @@ else {
         }
     }
 }
+
 $tray = CreateTrayIcon
 $timer = New-Object System.Windows.Forms.Timer
 $timer.Interval = $config.checkInterval * 1000

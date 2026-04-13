@@ -2,12 +2,12 @@
   "checkInterval": 300,
   "showNotifications": true,
   "autoStart": false,
-  "logFile": "C:\\Users\\myoun\\.local\\bin\\autopush.log",
-  "iconRunning": "C:\\Users\\myoun\\.local\\bin\\autopush_running.ico",
-  "iconPaused": "C:\\Users\\myoun\\.local\\bin\\autopush_paused.ico",
+  "logFile": "C:\\Users\\USERNAME\\.local\\bin\\autopush.log",
+  "iconRunning": "C:\\Users\\USERNAME\\.local\\bin\\autopush_running.ico",
+  "iconPaused": "C:\\Users\\USERNAME\\.local\\bin\\autopush_paused.ico",
   "repositories": [
     {
-      "path": "C:\\users\\myoun\\git-repos\\lcca-dev",
+      "path": "C:\\users\\USERNAME\\pathtorepo",
       "branch": "main",
       "enabled": true
     }

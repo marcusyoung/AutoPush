@@ -3,7 +3,7 @@ $autopushScript = Join-Path $scriptPath "autopush.ps1"
 
 $pinfo = New-Object System.Diagnostics.ProcessStartInfo
 $pinfo.FileName = "powershell.exe"
-$pinfo.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$autopushScript`""
+$pinfo.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$autopushScript`""
 $pinfo.UseShellExecute = $false
 $pinfo.CreateNoWindow = $true
 

@@ -4,7 +4,6 @@ Add-Type -AssemblyName System.Drawing
 $scriptDir = $PSScriptRoot
 $script:configPath = Join-Path $scriptDir "autopush-config.json"
 $script:isPaused = $false
-$script:pauseItem = $null
 
 function LoadConfig {
     if (-not (Test-Path $script:configPath)) {
@@ -23,6 +22,13 @@ function CheckAndPush {
         # Fetch latest from remote
         git -C $repo.path fetch origin 2>$null
         
+        # Verify upstream tracking branch exists before counting commits
+        $upstream = git -C $repo.path rev-parse --abbrev-ref "$($repo.branch)@{u}" 2>$null
+        if (-not $upstream) {
+            Write-Host "[$(Get-Date -Format 'HH:mm:ss')] $($repo.path): no upstream set for '$($repo.branch)', skipping"
+            return
+        }
+        
         # Count commits ahead of remote using rev-list (locale-independent)
         $aheadCount = git -C $repo.path rev-list --count "$($repo.branch)@{u}..$($repo.branch)" 2>$null
         $aheadCount = if ($aheadCount) { [int]$aheadCount } else { 0 }
@@ -30,11 +36,12 @@ function CheckAndPush {
         if ($aheadCount -gt 0) {
             Write-Host "[$(Get-Date -Format 'HH:mm:ss')] $($repo.path): ahead by $aheadCount, pushing..."
             git -C $repo.path push origin $repo.branch
+            $pushExitCode = $LASTEXITCODE
             
             # Prepare log entry
             $logEntry = "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] $($repo.path) ($($repo.branch)): "
             
-            if ($LASTEXITCODE -eq 0) {
+            if ($pushExitCode -eq 0) {
                 Write-Host "[$(Get-Date -Format 'HH:mm:ss')] $($repo.path): push successful"
                 $logEntry += "PUSH SUCCESS ($aheadCount commit(s))"
                 $title = "AutoPush Success"
@@ -87,12 +94,14 @@ function ShowNotification {
         $balloon.Icon = [System.Drawing.SystemIcons]::Information
         $balloon.Visible = $true
         $balloon.ShowBalloonTip(5000, $Title, $Message, [System.Windows.Forms.ToolTipIcon]::Info)
+        Start-Sleep -Seconds 5
         $balloon.Visible = $false
         $balloon.Dispose()
     }
 }
 
 function CreateTrayIcon {
+    param([PSObject]$config)
     $tray = New-Object System.Windows.Forms.NotifyIcon
     
     $iconRunning = $config.iconRunning
@@ -145,7 +154,6 @@ function CreateTrayIcon {
             }
         }
     })
-    $script:pauseItem = $pauseItem
     $contextMenu.MenuItems.Add($pauseItem) | Out-Null
     
     # Edit Config
@@ -178,10 +186,10 @@ $config = LoadConfig
 if ($config.logFile -and -not [System.IO.Path]::IsPathRooted($config.logFile)) {
     $config.logFile = Join-Path $PSScriptRoot $config.logFile
 }
-if (-not [System.IO.Path]::IsPathRooted($config.iconRunning)) {
+if ($config.iconRunning -and -not [System.IO.Path]::IsPathRooted($config.iconRunning)) {
     $config.iconRunning = Join-Path $PSScriptRoot $config.iconRunning
 }
-if (-not [System.IO.Path]::IsPathRooted($config.iconPaused)) {
+if ($config.iconPaused -and -not [System.IO.Path]::IsPathRooted($config.iconPaused)) {
     $config.iconPaused = Join-Path $PSScriptRoot $config.iconPaused
 }
 
@@ -222,7 +230,7 @@ else {
     }
 }
 
-$tray = CreateTrayIcon
+$tray = CreateTrayIcon $config
 $timer = New-Object System.Windows.Forms.Timer
 $timer.Interval = $config.checkInterval * 1000
 

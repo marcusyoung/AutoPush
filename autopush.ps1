@@ -192,6 +192,17 @@ function CreateTrayIcon {
 
 $config = LoadConfig
 
+# Resolve relative paths in config (relative to script directory)
+if ($config.logFile -and -not [System.IO.Path]::IsPathRooted($config.logFile)) {
+    $config.logFile = Join-Path $PSScriptRoot $config.logFile
+}
+if (-not [System.IO.Path]::IsPathRooted($config.iconRunning)) {
+    $config.iconRunning = Join-Path $PSScriptRoot $config.iconRunning
+}
+if (-not [System.IO.Path]::IsPathRooted($config.iconPaused)) {
+    $config.iconPaused = Join-Path $PSScriptRoot $config.iconPaused
+}
+
 # Register startup shortcut if autoStart is enabled
 if ($config.autoStart) {
     $startupFolder = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
@@ -201,9 +212,9 @@ if ($config.autoStart) {
         try {
             $shell = New-Object -ComObject WScript.Shell
             $link = $shell.CreateShortcut($shortcutPath)
-            $link.TargetPath = "C:\Users\myoun\.local\bin\autopush.bat"
-            $link.Arguments = ""
-            $link.WorkingDirectory = "C:\Users\myoun\.local\bin"
+            $link.TargetPath = Join-Path $PSScriptRoot "autopush.ps1"
+            $link.Arguments = "-NoProfile -ExecutionPolicy Bypass"
+            $link.WorkingDirectory = $PSScriptRoot
             $link.WindowStyle = 7  # Hidden
             $link.IconLocation = $config.iconRunning  # Use running icon
             $link.Save()

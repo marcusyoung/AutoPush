@@ -63,7 +63,7 @@ Edit `autopush-config.json`:
 - `autoStart` — Create startup shortcut on first run (true/false). Set to false to remove.
 - `logFile` — Path to log file; set to null to disable logging. Relative paths resolve to script directory.
 - `iconRunning` / `iconPaused` — Icon file names or paths. Relative paths resolve to script directory.
-- `repositories` — Array of repos with path, branch, and enabled status. Paths should be absolute.
+- `repositories` — Array of repos with path, branch, and enabled status. Paths should be absolute. Each branch must have an upstream tracking branch configured (`git push -u origin <branch>`); repos without one are skipped with a warning.
 
 ## Usage
 
@@ -74,7 +74,7 @@ run-autopush
 
 ### Right-Click Menu (System Tray)
 - **Pause** — Pause checking (toggles to Resume)
-- **Edit Config** — Opens config file in Notepad
+- **Edit Config** — Opens config file in Notepad. Changes take effect on next restart.
 - **Exit** — Stop the app
 
 ### Logging

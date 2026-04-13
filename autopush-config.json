@@ -1,0 +1,15 @@
+{
+  "checkInterval": 300,
+  "showNotifications": true,
+  "autoStart": false,
+  "logFile": "C:\\Users\\myoun\\.local\\bin\\autopush.log",
+  "iconRunning": "C:\\Users\\myoun\\.local\\bin\\autopush_running.ico",
+  "iconPaused": "C:\\Users\\myoun\\.local\\bin\\autopush_paused.ico",
+  "repositories": [
+    {
+      "path": "C:\\users\\myoun\\git-repos\\lcca-dev",
+      "branch": "main",
+      "enabled": true
+    }
+  ]
+}

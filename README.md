@@ -1,0 +1,104 @@
+# AutoPush
+
+A lightweight PowerShell utility that automatically detects and pushes git commits when your local branch is ahead of the remote. Runs as a system tray application with pause/resume controls and notifications.
+
+## Features
+
+- **Automatic Detection** — Polls repositories every 5 minutes (configurable) for unpushed commits
+- **System Tray Icon** — Green icon when running, gray when paused
+- **Pause/Resume** — Right-click menu to pause detection without exiting
+- **Notifications** — Toast notifications on successful push or failure
+- **Logging** — Tracks push events to a log file (only logs actual pushes, not checks)
+- **Multi-Repo** — Monitor multiple repositories from a single config
+- **Auto-Start** — Optional startup on Windows login (configurable)
+- **No Flash** — Runs cleanly in background (except brief PowerShell taskbar icon on right-click)
+
+## Installation
+
+1. Save these files to `C:\Users\<username>\.local\bin\` (or any directory in your PATH):
+   - `autopush.ps1` — Main application
+   - `run-autopush.ps1` — Optional launcher script
+   - `autopush-config.json` — Configuration file
+   - `gitpush_running.ico` — Running state icon
+   - `gitpush_paused.ico` — Paused state icon
+
+2. Edit `autopush-config.json` with your repository paths and preferences
+
+3. **One-time launch:** 
+   ```powershell
+   run-autopush
+   ```
+   or call directly:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File "C:\Users\<username>\.local\bin\autopush.ps1"
+   ```
+
+4. **Auto-start on login:** Set `"autoStart": true` in config (creates a startup shortcut automatically)
+
+## Configuration
+
+Edit `autopush-config.json`:
+
+```json
+{
+  "checkInterval": 300,
+  "showNotifications": true,
+  "autoStart": true,
+  "logFile": "C:\\Users\\<username>\\.local\\bin\\autopush.log",
+  "iconRunning": "C:\\Users\\<username>\\.local\\bin\\gitpush_running.ico",
+  "iconPaused": "C:\\Users\\<username>\\.local\\bin\\gitpush_paused.ico",
+  "repositories": [
+    {
+      "path": "C:\\path\\to\\repo",
+      "branch": "main",
+      "enabled": true
+    }
+  ]
+}
+```
+
+**Options:**
+- `checkInterval` — Seconds between checks (default: 300 = 5 minutes)
+- `showNotifications` — Enable toast notifications (true/false)
+- `autoStart` — Create startup shortcut on first run (true/false). Set to false to remove.
+- `logFile` — Path to log file; set to null to disable logging
+- `iconRunning` / `iconPaused` — Icon file paths
+- `repositories` — Array of repos with path, branch, and enabled status
+
+## Usage
+
+### Start
+```powershell
+run-autopush
+```
+
+### Right-Click Menu (System Tray)
+- **Pause** — Pause checking (toggles to Resume)
+- **Edit Config** — Opens config file in Notepad
+- **Close Menu** — Close the menu
+- **Exit** — Stop the app
+
+### Logging
+Push events are logged to the configured log file with timestamp and result:
+```
+[2026-04-13 16:45:23] C:\path\to\repo (main): PUSH SUCCESS (3 commit(s))
+[2026-04-13 16:50:15] C:\path\to\repo (main): PUSH FAILED (2 commit(s) ahead)
+```
+
+## Requirements
+
+- Windows 7+
+- PowerShell 5.0+ (or PowerShell 7+)
+- Git installed and in PATH
+- .NET Framework 4.5+
+
+## Limitations
+
+- Brief PowerShell taskbar icon appears when right-clicking the tray icon (cosmetic only, doesn't affect functionality)
+- Only works on Windows
+
+## License
+
+MIT
+
+

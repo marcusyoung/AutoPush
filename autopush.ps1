@@ -1,7 +1,7 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-$scriptDir = "C:\Users\myoun\.local\bin"
+$scriptDir = $PSScriptRoot
 $script:configPath = Join-Path $scriptDir "autopush-config.json"
 $script:isPaused = $false
 $script:pauseItem = $null

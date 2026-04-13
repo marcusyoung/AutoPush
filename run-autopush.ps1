@@ -1,4 +1,4 @@
-$scriptPath = "C:\Users\myoun\.local\bin"
+$scriptPath = $PSScriptRoot
 $autopushScript = Join-Path $scriptPath "autopush.ps1"
 
 $pinfo = New-Object System.Diagnostics.ProcessStartInfo

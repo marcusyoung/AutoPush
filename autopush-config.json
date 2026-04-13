@@ -7,7 +7,7 @@
   "iconPaused": "autopush_paused.ico",
   "repositories": [
     {
-      "path": "C:\\users\\myoun\\git-repos\\lcca-dev",
+      "path": "C:\\PATH\\TO\\REPO",
       "branch": "main",
       "enabled": true
     }

@@ -1,4 +1,4 @@
-# AutoPush
+# Auto Push
 
 A lightweight PowerShell utility that automatically detects and pushes git commits when your local branch is ahead of the remote. Runs as a system tray application with pause/resume controls and notifications.
 
@@ -25,6 +25,7 @@ A lightweight PowerShell utility that automatically detects and pushes git commi
 2. Edit `autopush-config.json` with your repository paths and preferences
 
 3. **One-time launch:** 
+   
    ```powershell
    run-autopush
    ```
@@ -32,7 +33,7 @@ A lightweight PowerShell utility that automatically detects and pushes git commi
    ```powershell
    powershell -ExecutionPolicy Bypass -File "C:\Users\<username>\.local\bin\autopush.ps1"
    ```
-
+   
 4. **Auto-start on login:** Set `"autoStart": true` in config (creates a startup shortcut automatically)
 
 ## Configuration
@@ -98,5 +99,4 @@ Push events are logged to the configured log file with timestamp and result:
 ## License
 
 MIT
-
 

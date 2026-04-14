@@ -1,4 +1,4 @@
-# Auto Push
+# Auto Push <img src="autopush_running.ico" width="24" height="24" alt="running">
 
 A lightweight PowerShell utility that automatically detects and pushes git commits when your local branch is ahead of the remote. Runs as a system tray application with pause/resume controls and notifications.
 
